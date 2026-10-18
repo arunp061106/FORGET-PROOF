@@ -22,20 +22,35 @@ logged without tampering. The empirical proof that unlearning succeeded
 is the membership inference attack result.
 """
 
+import os
 import json
 import hashlib
 import hmac
 import uuid
 from datetime import datetime, timezone
 
-
-DEFAULT_HMAC_KEY = b"forgetproof-audit-key-linuxone-2026"
+# Documented HMAC signing key:
+# Reads from the environment variable FORGETPROOF_HMAC_KEY if defined.
+# If not defined, falls back to the documented development placeholder key.
+# In a production deployment, set: export FORGETPROOF_HMAC_KEY="<your-hsm-signing-key>"
+DEFAULT_HMAC_KEY = os.environ.get(
+    "FORGETPROOF_HMAC_KEY", "forgetproof-audit-key-linuxone-2026"
+).encode("utf-8")
 
 
 class ReceiptChain:
-    def __init__(self, secret_key=DEFAULT_HMAC_KEY):
+    def __init__(self, secret_key=None):
         self.receipts = []
-        self.secret_key = secret_key
+        self.secret_key = secret_key if secret_key is not None else DEFAULT_HMAC_KEY
+
+    @classmethod
+    def load(cls, path, secret_key=None):
+        """Load an exported receipt chain from JSON file."""
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        chain = cls(secret_key=secret_key)
+        chain.receipts = data.get("receipts", [])
+        return chain
 
     def _hash(self, data_str):
         return hashlib.sha256(data_str.encode("utf-8")).hexdigest()
@@ -115,7 +130,7 @@ class ReceiptChain:
                 print(f"Chain broken at receipt {i}: invalid HMAC signature")
                 return False
 
-        print(f"Chain verified: {len(self.receipts)} receipts, all hashes & signatures valid ✓")
+        print(f"Chain verified: {len(self.receipts)} receipts, all hashes & signatures valid [OK]")
         return True
 
     def to_json(self, path=None):
@@ -140,7 +155,7 @@ class ReceiptChain:
             return
 
         print(f"\n{'='*50}")
-        print(f"Forget Receipt Chain — {len(self.receipts)} entries")
+        print(f"Forget Receipt Chain - {len(self.receipts)} entries")
         print(f"{'='*50}")
 
         total_time = sum(r["retrain_time_seconds"] for r in self.receipts)
@@ -148,8 +163,20 @@ class ReceiptChain:
 
         print(f"Total retrain time: {total_time:.2f}s")
         print(f"Shards affected: {sorted(shards_affected)}")
-        print(f"Chain integrity: {'✓ Valid (Hashes + HMAC signed)' if self.verify_chain() else '✗ BROKEN'}")
+        print(f"Chain integrity: {'[VALID] (Hashes + HMAC signed)' if self.verify_chain() else '[BROKEN]'}")
 
         for i, r in enumerate(self.receipts):
             print(f"  #{i+1} | record {r['record_id']} | shard {r['shard_id']} | "
                   f"{r['retrain_time_seconds']:.3f}s | hash {r['hash'][:10]}... | sig {r['signature'][:10]}...")
+
+
+if __name__ == "__main__":
+    import sys
+    chain_path = sys.argv[1] if len(sys.argv) > 1 else "outputs/receipt_chain.json"
+    if os.path.exists(chain_path):
+        chain = ReceiptChain.load(chain_path)
+        chain.summary()
+        sys.exit(0 if chain.verify_chain() else 1)
+    else:
+        print(f"Receipt chain file not found: {chain_path}")
+        sys.exit(1)
