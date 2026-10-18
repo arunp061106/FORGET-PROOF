@@ -1,0 +1,856 @@
+{
+  "metadata": {
+    "title": "ForgetProof Machine Unlearning Results",
+    "track": "AI Secured: Innovation Without Exposure",
+    "datathon": "IBM Z Datathon 2026",
+    "exported_at": "2026-10-18T07:24:18Z",
+    "system_info": {
+      "machine": "AMD64",
+      "cpu_count": 16,
+      "python_version": "3.12.10",
+      "hostname": "AK006",
+      "system": "Windows",
+      "release": "11"
+    },
+    "dataset_meta": {
+      "dataset_name": "Diabetes 130-US Hospitals (UCI ID: 296)",
+      "total_cleaned_samples": 98053,
+      "train_samples": 78442,
+      "test_samples": 19611,
+      "features_count": 47,
+      "positive_class_pct": 11.26,
+      "majority_class_pct": 88.74,
+      "majority_class_baseline_accuracy": 0.8874
+    },
+    "shard_distribution": {
+      "0": {
+        "samples": 9696,
+        "pct": 12.4
+      },
+      "1": {
+        "samples": 9866,
+        "pct": 12.6
+      },
+      "2": {
+        "samples": 9571,
+        "pct": 12.2
+      },
+      "3": {
+        "samples": 9900,
+        "pct": 12.6
+      },
+      "4": {
+        "samples": 9908,
+        "pct": 12.6
+      },
+      "5": {
+        "samples": 9777,
+        "pct": 12.5
+      },
+      "6": {
+        "samples": 9940,
+        "pct": 12.7
+      },
+      "7": {
+        "samples": 9784,
+        "pct": 12.5
+      }
+    },
+    "compliance": {
+      "score": 79.4,
+      "grade": "B",
+      "description": "Our own summary metric, not a regulatory standard.",
+      "formula": "Score (0-100) = Fulfillment (30 pts) + Speed (25 pts) + Privacy (25 pts) + Integrity (20 pts)",
+      "components": {
+        "fulfillment": {
+          "earned": 30.0,
+          "max": 30.0,
+          "description": "Request fulfillment rate: 10/10 unlearning requests completed successfully without errors."
+        },
+        "speed": {
+          "earned": 24.1,
+          "max": 25.0,
+          "description": "Retrain latency speedup: average shard retrain of 1.04s vs 4.68s full retrain baseline."
+        },
+        "privacy": {
+          "earned": 5.3,
+          "max": 25.0,
+          "description": "Membership inference mitigation: evaluated via loss-threshold MIA on synthetic canary records."
+        },
+        "integrity": {
+          "earned": 20.0,
+          "max": 20.0,
+          "description": "Audit chain integrity: SHA-256 hash chaining and HMAC-SHA256 signatures 100% verified."
+        }
+      }
+    }
+  },
+  "summary": {
+    "speedup": 4.500062577684373,
+    "full_retrain_time": 4.676316738128662,
+    "shard_retrain_time": 1.039167046546936,
+    "compute_saved_pct": 74.76932378449021,
+    "baseline_accuracy": 0.8875631023405232,
+    "ensemble_accuracy": 0.8871041762276274,
+    "majority_class_baseline": 0.8874,
+    "accuracy_difference": 0.00046,
+    "chain_verified": true,
+    "receipt_count": 10,
+    "compliance_score": 79.4,
+    "compliance_grade": "B"
+  },
+  "baseline": {
+    "accuracy": 0.8875631023405232,
+    "auc": 0.6290300675496148,
+    "train_time": 3.541386604309082
+  },
+  "ensemble": {
+    "accuracy": 0.8871041762276274,
+    "auc": 0.6349716768894857,
+    "shard_accuracies": {
+      "0": 0.8870531844373056,
+      "1": 0.8871041762276274,
+      "2": 0.8869512008566621,
+      "3": 0.8872571515985926,
+      "4": 0.8872061598082709,
+      "5": 0.8873591351792361,
+      "6": 0.8871551680179491,
+      "7": 0.8872061598082709
+    }
+  },
+  "retrain_times": {
+    "full_retrain": 4.676316738128662,
+    "avg_shard_retrain": 1.039167046546936,
+    "speedup": 4.500062577684373
+  },
+  "sweep": [
+    {
+      "n_shards": 1,
+      "accuracy": 0.8875631023405232,
+      "auc": 0.6290300675496148,
+      "train_time": 4.83902382850647,
+      "label": "baseline"
+    },
+    {
+      "n_shards": 2,
+      "accuracy": 0.8873081433889144,
+      "auc": 0.6386221840063785,
+      "train_time": 4.873000621795654,
+      "shard_accs": {
+        "0": 0.8871551680179491,
+        "1": 0.8874101269695579
+      },
+      "label": "N=2"
+    },
+    {
+      "n_shards": 4,
+      "accuracy": 0.8872571515985926,
+      "auc": 0.6363626517572931,
+      "train_time": 4.8511803150177,
+      "shard_accs": {
+        "0": 0.8872571515985926,
+        "1": 0.8870021926469839,
+        "2": 0.8874611187598797,
+        "3": 0.8875121105502014
+      },
+      "label": "N=4"
+    },
+    {
+      "n_shards": 8,
+      "accuracy": 0.8871551680179491,
+      "auc": 0.6357651468215465,
+      "train_time": 4.8115785121917725,
+      "shard_accs": {
+        "0": 0.8868492172760185,
+        "1": 0.8871551680179491,
+        "2": 0.8868492172760185,
+        "3": 0.8870531844373056,
+        "4": 0.8870531844373056,
+        "5": 0.8872061598082709,
+        "6": 0.8871551680179491,
+        "7": 0.8871551680179491
+      },
+      "label": "N=8"
+    },
+    {
+      "n_shards": 16,
+      "accuracy": 0.8871551680179491,
+      "auc": 0.632562735940427,
+      "train_time": 4.505717754364014,
+      "shard_accs": {
+        "0": 0.8874611187598797,
+        "1": 0.8874611187598797,
+        "2": 0.8872061598082709,
+        "3": 0.8871551680179491,
+        "4": 0.8873081433889144,
+        "5": 0.8872061598082709,
+        "6": 0.8871041762276274,
+        "7": 0.8860843404211922,
+        "8": 0.8870531844373056,
+        "9": 0.886747233695375,
+        "10": 0.8872061598082709,
+        "11": 0.8871041762276274,
+        "12": 0.8873081433889144,
+        "13": 0.8867982254856968,
+        "14": 0.8870021926469839,
+        "15": 0.8870021926469839
+      },
+      "label": "N=16"
+    }
+  ],
+  "simulation": {
+    "summary": {
+      "n_requests": 30,
+      "total_sisa_time": 30.727250814437866,
+      "total_full_time": 121.78528451627163,
+      "compute_saved_pct": 74.76932378449021,
+      "final_accuracy": 0.8871551680179491
+    },
+    "requests": [
+      {
+        "request_num": 1,
+        "record_id": 20053,
+        "shard_id": 0,
+        "shard_retrain_time": 1.027,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 1.027,
+        "cumulative_full_time": 4.06,
+        "compute_saved_pct": 74.7,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 2,
+        "record_id": 47465,
+        "shard_id": 5,
+        "shard_retrain_time": 1.005,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 2.032,
+        "cumulative_full_time": 8.12,
+        "compute_saved_pct": 74.98,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 3,
+        "record_id": 65116,
+        "shard_id": 1,
+        "shard_retrain_time": 1.05,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 3.082,
+        "cumulative_full_time": 12.18,
+        "compute_saved_pct": 74.7,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 4,
+        "record_id": 102768,
+        "shard_id": 6,
+        "shard_retrain_time": 1.042,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 4.124,
+        "cumulative_full_time": 16.24,
+        "compute_saved_pct": 74.61,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 5,
+        "record_id": 102769,
+        "shard_id": 6,
+        "shard_retrain_time": 1.034,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 5.158,
+        "cumulative_full_time": 20.3,
+        "compute_saved_pct": 74.59,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 6,
+        "record_id": 102770,
+        "shard_id": 3,
+        "shard_retrain_time": 1.031,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 6.189,
+        "cumulative_full_time": 24.36,
+        "compute_saved_pct": 74.59,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 7,
+        "record_id": 102771,
+        "shard_id": 4,
+        "shard_retrain_time": 1.004,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 7.193,
+        "cumulative_full_time": 28.42,
+        "compute_saved_pct": 74.69,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 8,
+        "record_id": 102772,
+        "shard_id": 7,
+        "shard_retrain_time": 1.048,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 8.241,
+        "cumulative_full_time": 32.48,
+        "compute_saved_pct": 74.63,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 9,
+        "record_id": 102773,
+        "shard_id": 1,
+        "shard_retrain_time": 1.022,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 9.263,
+        "cumulative_full_time": 36.54,
+        "compute_saved_pct": 74.65,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 10,
+        "record_id": 48735,
+        "shard_id": 3,
+        "shard_retrain_time": 1.016,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 10.279,
+        "cumulative_full_time": 40.6,
+        "compute_saved_pct": 74.68,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 11,
+        "record_id": 51204,
+        "shard_id": 1,
+        "shard_retrain_time": 1.033,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 11.312,
+        "cumulative_full_time": 44.66,
+        "compute_saved_pct": 74.67,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 12,
+        "record_id": 18942,
+        "shard_id": 5,
+        "shard_retrain_time": 1.012,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 12.324,
+        "cumulative_full_time": 48.72,
+        "compute_saved_pct": 74.7,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 13,
+        "record_id": 33412,
+        "shard_id": 2,
+        "shard_retrain_time": 1.024,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 13.348,
+        "cumulative_full_time": 52.78,
+        "compute_saved_pct": 74.71,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 14,
+        "record_id": 21890,
+        "shard_id": 0,
+        "shard_retrain_time": 1.021,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 14.369,
+        "cumulative_full_time": 56.84,
+        "compute_saved_pct": 74.72,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 15,
+        "record_id": 67843,
+        "shard_id": 7,
+        "shard_retrain_time": 1.049,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 15.418,
+        "cumulative_full_time": 60.9,
+        "compute_saved_pct": 74.68,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 16,
+        "record_id": 49201,
+        "shard_id": 5,
+        "shard_retrain_time": 1.018,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 16.436,
+        "cumulative_full_time": 64.96,
+        "compute_saved_pct": 74.7,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 17,
+        "record_id": 88123,
+        "shard_id": 6,
+        "shard_retrain_time": 1.025,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 17.461,
+        "cumulative_full_time": 69.02,
+        "compute_saved_pct": 74.7,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 18,
+        "record_id": 59231,
+        "shard_id": 5,
+        "shard_retrain_time": 1.014,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 18.475,
+        "cumulative_full_time": 73.08,
+        "compute_saved_pct": 74.72,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 19,
+        "record_id": 72341,
+        "shard_id": 4,
+        "shard_retrain_time": 1.009,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 19.484,
+        "cumulative_full_time": 77.14,
+        "compute_saved_pct": 74.74,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 20,
+        "record_id": 94243,
+        "shard_id": 6,
+        "shard_retrain_time": 1.025,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 20.509,
+        "cumulative_full_time": 81.2,
+        "compute_saved_pct": 74.74,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 21,
+        "record_id": 38472,
+        "shard_id": 6,
+        "shard_retrain_time": 1.015,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 21.524,
+        "cumulative_full_time": 85.26,
+        "compute_saved_pct": 74.75,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 22,
+        "record_id": 19284,
+        "shard_id": 1,
+        "shard_retrain_time": 1.038,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 22.562,
+        "cumulative_full_time": 89.32,
+        "compute_saved_pct": 74.74,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 23,
+        "record_id": 84721,
+        "shard_id": 7,
+        "shard_retrain_time": 1.052,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 23.614,
+        "cumulative_full_time": 93.38,
+        "compute_saved_pct": 74.71,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 24,
+        "record_id": 62914,
+        "shard_id": 6,
+        "shard_retrain_time": 1.024,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 24.638,
+        "cumulative_full_time": 97.44,
+        "compute_saved_pct": 74.71,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 25,
+        "record_id": 44821,
+        "shard_id": 1,
+        "shard_retrain_time": 1.041,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 25.679,
+        "cumulative_full_time": 101.5,
+        "compute_saved_pct": 74.7,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 26,
+        "record_id": 31092,
+        "shard_id": 3,
+        "shard_retrain_time": 1.013,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 26.692,
+        "cumulative_full_time": 105.56,
+        "compute_saved_pct": 74.71,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 27,
+        "record_id": 28410,
+        "shard_id": 0,
+        "shard_retrain_time": 1.023,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 27.715,
+        "cumulative_full_time": 109.62,
+        "compute_saved_pct": 74.72,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 28,
+        "record_id": 91204,
+        "shard_id": 6,
+        "shard_retrain_time": 1.029,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 28.744,
+        "cumulative_full_time": 113.68,
+        "compute_saved_pct": 74.71,
+        "accuracy": 0.8872
+      },
+      {
+        "request_num": 29,
+        "record_id": 73311,
+        "shard_id": 6,
+        "shard_retrain_time": 1.023,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 29.767,
+        "cumulative_full_time": 117.74,
+        "compute_saved_pct": 74.72,
+        "accuracy": 0.8871
+      },
+      {
+        "request_num": 30,
+        "record_id": 83406,
+        "shard_id": 2,
+        "shard_retrain_time": 1.011,
+        "est_full_retrain_time": 4.06,
+        "cumulative_sisa_time": 30.778,
+        "cumulative_full_time": 121.8,
+        "compute_saved_pct": 74.73,
+        "accuracy": 0.8872
+      }
+    ]
+  },
+  "mia": {
+    "attack_type": "Yeom Loss-Threshold Attack (Yeom et al. 2018)",
+    "before": {
+      "auc": 0.11600000000000002,
+      "attack_accuracy": 0.7333,
+      "member_recall": 0.0,
+      "nonmember_recall": 0.89,
+      "privacy_leakage": -0.12,
+      "threshold": 0.0685,
+      "sample_losses": [
+        0.0575,
+        0.2608,
+        0.1253,
+        0.093,
+        0.0336,
+        0.0336,
+        0.0248,
+        0.1809,
+        0.0935,
+        0.1185,
+        0.0217,
+        0.3003,
+        0.1629,
+        0.0391,
+        0.0361,
+        0.0362,
+        0.049,
+        0.0795,
+        0.0652,
+        0.0475
+      ]
+    },
+    "after": {
+      "auc": 0.10550000000000001,
+      "attack_accuracy": 0.8091,
+      "member_recall": 0.0,
+      "nonmember_recall": 0.89,
+      "privacy_leakage": -0.11,
+      "threshold": 0.0685,
+      "sample_losses": [
+        0.3282,
+        0.1531,
+        0.196,
+        0.2204,
+        0.254,
+        0.4583,
+        0.169,
+        0.2788,
+        0.3175,
+        0.1305,
+        0.3258,
+        0.1611,
+        0.1348,
+        0.7742,
+        0.8615,
+        0.4835,
+        0.1999,
+        0.1426,
+        0.3736,
+        0.2476
+      ]
+    },
+    "non_members": {
+      "sample_losses": [
+        0.1325,
+        0.2709,
+        0.1087,
+        0.7001,
+        0.1749,
+        0.3716,
+        0.1934,
+        0.2835,
+        0.2978,
+        0.1511,
+        0.9732,
+        0.4731,
+        0.8013,
+        0.663,
+        0.3278,
+        0.7374,
+        0.1232,
+        0.1545,
+        0.1116,
+        0.1984,
+        0.223,
+        0.1791,
+        0.5411,
+        0.2103,
+        0.1825,
+        0.2956,
+        0.138,
+        0.5051,
+        0.1194,
+        1.1835,
+        0.4699,
+        0.1554,
+        0.1014,
+        0.5225,
+        0.4068,
+        0.4264,
+        0.4688,
+        0.1192,
+        0.211,
+        0.1308,
+        0.5971,
+        0.3441,
+        0.2005,
+        0.1164,
+        0.1931,
+        0.1983,
+        0.427,
+        0.3537,
+        0.6456,
+        0.2598,
+        0.1318,
+        0.4123,
+        0.4576,
+        0.306,
+        0.4685,
+        0.2702,
+        0.2849,
+        0.2395,
+        0.1064,
+        0.1285,
+        0.108,
+        0.3529,
+        0.1943,
+        0.2776,
+        0.6953,
+        0.1717,
+        0.2321,
+        0.4522,
+        0.165,
+        0.12,
+        0.1855,
+        0.144,
+        0.7637,
+        0.5127,
+        0.3509,
+        0.6129,
+        0.507,
+        0.1516,
+        0.6577,
+        0.2938,
+        0.5118,
+        0.6661,
+        0.1957,
+        0.1291,
+        0.1647,
+        0.2393,
+        0.526,
+        0.5928,
+        0.1017,
+        0.2787,
+        0.2351,
+        0.1628,
+        0.1319,
+        0.203,
+        0.8158,
+        0.1976,
+        0.2829,
+        0.4035,
+        0.213,
+        0.9919
+      ]
+    },
+    "disclaimer": "One canary test shows no detectable signal above noise, which is empirical evidence under this threat model, not absolute mathematical proof of unlearning."
+  },
+  "receipt_chain": {
+    "chain_length": 10,
+    "verified": true,
+    "receipts": [
+      {
+        "request_id": "f0802ee2-d3c6-4502-b150-c7678c883f38",
+        "timestamp": "2026-10-18T07:21:19.794242+00:00",
+        "record_id": 102765,
+        "shard_id": 0,
+        "retrain_time_seconds": 1.0272,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "GENESIS",
+        "hash": "2518e63775b0cf5defe931f8d138177e2d6990edbb679f8a191ef3d955ce4c37",
+        "signature": "78826336ec8b7e049fe73a8f2ad36514da7c6b31701c69bbbf90a97ea98da55b"
+      },
+      {
+        "request_id": "6da7b6e2-b570-4e8e-8813-92ac96a7a362",
+        "timestamp": "2026-10-18T07:21:22.632314+00:00",
+        "record_id": 102766,
+        "shard_id": 5,
+        "retrain_time_seconds": 1.0078,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "2518e63775b0cf5defe931f8d138177e2d6990edbb679f8a191ef3d955ce4c37",
+        "hash": "b9bdf6dbc4e72a86de994a6d436516e09bf80a891b0c58e8ebd1ce4cea58a9f3",
+        "signature": "f92c3e660f6340cdc69a27acfc247698cad19d6539940bffb6eff5f985a17eef"
+      },
+      {
+        "request_id": "78a2573d-c9f3-4680-8452-855ddc4be880",
+        "timestamp": "2026-10-18T07:21:25.517852+00:00",
+        "record_id": 102767,
+        "shard_id": 1,
+        "retrain_time_seconds": 1.0544,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "b9bdf6dbc4e72a86de994a6d436516e09bf80a891b0c58e8ebd1ce4cea58a9f3",
+        "hash": "56c09863fca195f16a67e7d801e0268f045f030f113e86f6e06400f999f17e7e",
+        "signature": "9e3030e2993337ec4927b9dffa065aca146fc741c75a2c0bf543f2ba17f23843"
+      },
+      {
+        "request_id": "248567c2-54ed-496b-bd30-916298d69040",
+        "timestamp": "2026-10-18T07:21:28.386347+00:00",
+        "record_id": 102768,
+        "shard_id": 6,
+        "retrain_time_seconds": 1.0343,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "56c09863fca195f16a67e7d801e0268f045f030f113e86f6e06400f999f17e7e",
+        "hash": "6fae6c4bace27c4f68fa285503d579f30ebbb03ca8a2c92970110c6f3f7f5fda",
+        "signature": "44e77dd56a36d225bf15639d5b8d75e58ccaa339b813025d01b9dd09b1680445"
+      },
+      {
+        "request_id": "3c4d202c-ffed-41c7-985f-5078f938501c",
+        "timestamp": "2026-10-18T07:21:31.255989+00:00",
+        "record_id": 102769,
+        "shard_id": 6,
+        "retrain_time_seconds": 1.0355,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8873,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "6fae6c4bace27c4f68fa285503d579f30ebbb03ca8a2c92970110c6f3f7f5fda",
+        "hash": "7864eae122a9b9f74013cfd1f9144334b150ac0cc3bb4e1e6edebd7624cc36ed",
+        "signature": "9900d5d9f8654e25fcc0ab4b6ee6e1e1fc951765169c9104021b4c156ecc78b2"
+      },
+      {
+        "request_id": "b9212104-413f-4fad-a7d9-e19a419fcba5",
+        "timestamp": "2026-10-18T07:21:34.134228+00:00",
+        "record_id": 102770,
+        "shard_id": 3,
+        "retrain_time_seconds": 1.0339,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "7864eae122a9b9f74013cfd1f9144334b150ac0cc3bb4e1e6edebd7624cc36ed",
+        "hash": "5302dbe8e0cb7c04b585e9089737630385396c87114f43c5e28e16c3117bad0c",
+        "signature": "25fe8df8faf44efd27f18e2a0a173ed544144b6c34581e11469aee18ff72e1a0"
+      },
+      {
+        "request_id": "08ab000a-e87f-4f20-a184-004383456013",
+        "timestamp": "2026-10-18T07:21:36.968084+00:00",
+        "record_id": 102771,
+        "shard_id": 4,
+        "retrain_time_seconds": 1.0074,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "5302dbe8e0cb7c04b585e9089737630385396c87114f43c5e28e16c3117bad0c",
+        "hash": "f890d749bbe9986bcb79c504a72797878affd93c27b37c8fda40ffdafc8604de",
+        "signature": "f62e8b6dec68667be1abac300015b3abb292ec04d337b9c054754a6f12c4ab9f"
+      },
+      {
+        "request_id": "c68c3e25-c252-44d4-881d-d564fd5dc2ae",
+        "timestamp": "2026-10-18T07:21:39.837080+00:00",
+        "record_id": 102772,
+        "shard_id": 7,
+        "retrain_time_seconds": 1.0433,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "f890d749bbe9986bcb79c504a72797878affd93c27b37c8fda40ffdafc8604de",
+        "hash": "f7fa665516a9e2fba18c0415025d13f2f11c9de944dd3835b9159254eafdc532",
+        "signature": "2bc2d970a010eaa107be8fa95d9f707601a43cb6f05b769a15b8c234ebaaf333"
+      },
+      {
+        "request_id": "1074ea9a-429e-4b99-b11b-9431a402a632",
+        "timestamp": "2026-10-18T07:21:42.707296+00:00",
+        "record_id": 102773,
+        "shard_id": 1,
+        "retrain_time_seconds": 1.0482,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "f7fa665516a9e2fba18c0415025d13f2f11c9de944dd3835b9159254eafdc532",
+        "hash": "413b70f67a9db7ba53e9105902919d6dd079026e19cdc2f0d8277beea43f769f",
+        "signature": "225d961f4eeb7ceacc4300cbdf187afe3f1813a7cf03aee6838b6545d0a5f4b2"
+      },
+      {
+        "request_id": "c7e08c01-b63d-4df5-8a10-da154ea27a55",
+        "timestamp": "2026-10-18T07:21:45.547544+00:00",
+        "record_id": 102774,
+        "shard_id": 3,
+        "retrain_time_seconds": 1.0182,
+        "accuracy_before": 0.8871,
+        "accuracy_after": 0.8872,
+        "mia_auc_before": 0.116,
+        "mia_auc_after": null,
+        "prev_hash": "413b70f67a9db7ba53e9105902919d6dd079026e19cdc2f0d8277beea43f769f",
+        "hash": "1414d07b44a76ebdbb8cfe4e4d13bcc80bdd64dfc491fa1646035dc3cd52ad86",
+        "signature": "edc3d3268a82debb9f4b7b1af64fa49c22ced0b22adc0171861379c2ca03cbbb"
+      }
+    ]
+  }
+}

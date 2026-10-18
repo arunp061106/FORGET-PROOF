@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Security & Credentials - NEVER COMMIT KEYS
+*.key
+*.pem
+*.pub
+*.pub.txt
+id_ed25519*
+ibm_rsa_key*
+*secret*
+.env
+
+# Large raw dataset files (downloaded dynamically via ucimlrepo)
+data/raw_diabetes.csv
+*.csv.gz
+*.tar.gz
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

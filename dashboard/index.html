@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForgetProof — Machine Unlearning Audit & Results Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard-wrapper">
+
+    <!-- Top Audit Header -->
+    <header class="dashboard-header">
+      <div class="title-row">
+        <h1>ForgetProof: SISA-Based Machine Unlearning Results</h1>
+        <span id="hardwareChip" class="hardware-chip"></span>
+      </div>
+      <p class="summary-text">
+        Audited machine unlearning for healthcare privacy using SISA consent sharding, loss-threshold membership inference attack evaluation, and tamper-evident HMAC-SHA256 receipt chains executed on IBM LinuxONE (s390x).
+      </p>
+    </header>
+
+    <!-- Key Figures Row (5 metrics) -->
+    <section class="kpi-row" aria-label="Key Figures">
+      <div class="kpi-cell" id="kpiSpeedupCard">
+        <div class="kpi-label">Retrain Latency Speedup</div>
+        <div class="kpi-num" id="kpiSpeedup">—</div>
+        <div class="kpi-context" id="kpiSpeedupSub">—</div>
+      </div>
+
+      <div class="kpi-cell" id="kpiSavedCard">
+        <div class="kpi-label">Cumulative Compute Saved</div>
+        <div class="kpi-num" id="kpiSaved">—</div>
+        <div class="kpi-context" id="kpiSavedSub">—</div>
+      </div>
+
+      <div class="kpi-cell" id="kpiAccCard">
+        <div class="kpi-label">Sharded Ensemble Accuracy</div>
+        <div class="kpi-num" id="kpiAcc">—</div>
+        <div class="kpi-context" id="kpiAccSub">—</div>
+      </div>
+
+      <div class="kpi-cell" id="kpiChainCard">
+        <div class="kpi-label">Audit Receipt Chain</div>
+        <div class="kpi-num" id="kpiChain">—</div>
+        <div class="kpi-context" id="kpiChainSub">—</div>
+      </div>
+
+      <div class="kpi-cell kpi-clickable" id="kpiScoreCard">
+        <div class="kpi-label">Compliance Score</div>
+        <div class="kpi-num" id="kpiScore">—</div>
+        <div class="kpi-context" id="kpiScoreSub">—</div>
+        <div class="click-hint">Click for formula breakdown</div>
+      </div>
+    </section>
+
+    <!-- Tabs Navigation -->
+    <nav class="tabs-nav" aria-label="Dashboard Sections">
+      <button class="tab-button active" data-target="tab-latency">Latency & Savings</button>
+      <button class="tab-button" data-target="tab-privacy">Privacy & Membership Inference</button>
+      <button class="tab-button" data-target="tab-lineage">Shard Lineage & Scaling</button>
+      <button class="tab-button" data-target="tab-receipts">Audit Receipts Log</button>
+      <button class="tab-button" data-target="tab-replay">Revocation Replay</button>
+    </nav>
+
+    <!-- TAB 1: Latency and Savings -->
+    <section id="tab-latency" class="tab-panel active">
+      <div class="card-grid">
+        <!-- Chart 1: Bar Chart (One-Shard vs Full Retrain) -->
+        <div class="content-card">
+          <div class="card-title-row">
+            <div>
+              <div class="card-title">Retrain Latency: One-Shard vs Full Retrain</div>
+              <div class="card-subtitle" id="barChartSubtitle">Comparison of wall-clock retraining time per withdrawal request</div>
+            </div>
+            <div class="control-bar" style="margin-bottom: 0;">
+              <label for="shardSelect">Shard Count:</label>
+              <select id="shardSelect"></select>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="retrainBarCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Cumulative Compute Chart -->
+        <div class="content-card">
+          <div class="card-title-row">
+            <div>
+              <div class="card-title">Cumulative Compute: SISA vs Full Retrain</div>
+              <div class="card-subtitle">Total time invested across sequential patient consent revocations</div>
+            </div>
+            <div class="toggle-group">
+              <button id="toggleLinear" class="toggle-option active">Linear</button>
+              <button id="toggleLog" class="toggle-option">Log</button>
+            </div>
+          </div>
+          <div class="control-bar">
+            <div class="slider-group">
+              <label for="withdrawalSlider">Withdrawal requests: <strong id="sliderVal">30</strong></label>
+              <input type="range" id="withdrawalSlider" min="1" max="30" value="30">
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="cumulativeCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Privacy and Membership Inference -->
+    <section id="tab-privacy" class="tab-panel">
+      <div class="card-grid">
+        <!-- Chart 3: Overlapping Loss Distribution Histogram -->
+        <div class="content-card">
+          <div class="card-title-row">
+            <div>
+              <div class="card-title">Per-Sample Cross-Entropy Loss Distributions</div>
+              <div class="card-subtitle">Overlapping distributions for training members, unlearned canaries, and non-members</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="lossHistCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 4: Threshold Slider & ROC Curve -->
+        <div class="content-card">
+          <div class="card-title-row">
+            <div>
+              <div class="card-title">Membership Inference Attack ROC & Threshold Evaluation</div>
+              <div class="card-subtitle">Live adversary detection metrics under varying loss thresholds</div>
+            </div>
+          </div>
+          <div class="control-bar">
+            <div class="slider-group">
+              <label for="threshSlider">Decision Threshold: <strong id="threshVal">0.0685</strong></label>
+              <input type="range" id="threshSlider" min="0.01" max="1.0" step="0.005" value="0.0685">
+            </div>
+            <div style="display: flex; gap: 1rem; font-family: var(--font-mono); font-size: 0.8rem;">
+              <span>Attack Acc: <strong id="liveAccuracy">—</strong></span>
+              <span>TPR: <strong id="liveTpr">—</strong></span>
+              <span>FPR: <strong id="liveFpr">—</strong></span>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="rocCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="plain-notice">
+        Note: One canary test shows no detectable signal above noise, which is empirical evidence under this threat model, not absolute mathematical proof of unlearning.
+      </div>
+    </section>
+
+    <!-- TAB 3: Shard Lineage & Scaling -->
+    <section id="tab-lineage" class="tab-panel">
+      <div class="content-card" style="margin-bottom: 1.25rem;">
+        <div class="card-title-row">
+          <div>
+            <div class="card-title">Shard Sweep Scaling: N=1 to N=16</div>
+            <div class="card-subtitle">Tradeoff between isolation granularity, utility, and parallel fitting latency</div>
+          </div>
+          <div class="toggle-group">
+            <button id="toggleScalingAcc" class="toggle-option active">Accuracy</button>
+            <button id="toggleScalingTime" class="toggle-option">Retrain Time</button>
+          </div>
+        </div>
+        <div class="chart-container" style="height: 260px;">
+          <canvas id="scalingCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-title-row">
+          <div>
+            <div class="card-title">Interactive Consent Shard Lineage</div>
+            <div class="card-subtitle">Hover or click any shard to trace its isolated training path through the SISA ensemble</div>
+          </div>
+        </div>
+        <div class="lineage-svg-wrap" id="lineageSvgWrap"></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Audit Receipts Log -->
+    <section id="tab-receipts" class="tab-panel">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div>
+            <div class="card-title">Tamper-Evident SHA-256 + HMAC Audit Trail</div>
+            <div class="card-subtitle">Cryptographic log of all executed consent withdrawal requests with immutable chaining</div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <input type="text" id="receiptSearch" placeholder="Filter receipts (ID, shard...)" style="width: 220px;">
+            <button id="btnVerifyChain" class="btn-primary">Verify Hash Chain</button>
+          </div>
+        </div>
+
+        <div id="verifyOutput" class="verify-output"></div>
+
+        <div class="table-container" style="margin-top: 1rem;">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th data-col="index">#</th>
+                <th data-col="request_id">Request ID</th>
+                <th data-col="record_id">Record ID</th>
+                <th data-col="shard_id">Target Shard</th>
+                <th data-col="retrain_time_seconds">Retrain Time</th>
+                <th>Result</th>
+                <th data-col="hash">SHA-256 Hash Prefix</th>
+              </tr>
+            </thead>
+            <tbody id="receiptsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: Revocation Replay -->
+    <section id="tab-replay" class="tab-panel">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div>
+            <div class="card-title">Replay of Recorded Run</div>
+            <div class="card-subtitle">Step-by-step sequential inspection of the 30 recorded consent withdrawal events</div>
+          </div>
+          <div class="control-bar" style="margin-bottom: 0;">
+            <span id="replayStepCounter" style="font-family: var(--font-mono); font-weight: 600;">Event 1 of 30</span>
+            <button id="replayPrev" class="btn-secondary">Previous</button>
+            <button id="replayNext" class="btn-secondary">Next</button>
+            <button id="replayPlay" class="btn-primary">Play</button>
+            <button id="replayReset" class="btn-secondary">Reset</button>
+          </div>
+        </div>
+
+        <div class="replay-status-box" id="replayConsole">
+          Loading replay stream...
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Compliance Score Modal Disclosure -->
+  <div class="modal-overlay" id="complianceModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">Compliance Score Formula & Components</div>
+        <button class="modal-close" id="closeComplianceModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          <strong>Label:</strong> Our own summary metric, not a regulatory standard.
+        </p>
+        <p>
+          The compliance score evaluates how effectively the system fulfills right-to-be-forgotten requests across four core pillars (total: 100 points):
+        </p>
+        <ul>
+          <li><strong>Fulfillment Rate (30 pts max):</strong> Percentage of submitted withdrawal requests successfully executed without errors.</li>
+          <li><strong>Speed & Latency (25 pts max):</strong> Wall-clock retrain latency benchmarked against the monolithic retrain standard.</li>
+          <li><strong>Privacy Protection (25 pts max):</strong> Empirical membership inference mitigation measured via loss-threshold attack on canary records.</li>
+          <li><strong>Chain Integrity (20 pts max):</strong> Cryptographic verification of the SHA-256 hash chain and HMAC-SHA256 signatures.</li>
+        </ul>
+        <p style="font-size: 0.8rem; color: var(--text-subtle);">
+          Note: This internal scoring framework is designed to help operators benchmark unlearning service quality, but does not constitute legal or regulatory certification under GDPR, HIPAA, or CCPA.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Local Offline Scripts (No CDN, no network calls) -->
+  <script src="./vendor/chart.umd.min.js"></script>
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
