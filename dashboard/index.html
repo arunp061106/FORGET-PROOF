@@ -137,8 +137,8 @@
               <label for="threshSlider">Decision Threshold: <strong id="threshVal">0.0685</strong></label>
               <input type="range" id="threshSlider" min="0.01" max="1.0" step="0.005" value="0.0685">
             </div>
-            <div style="display: flex; gap: 1rem; font-family: var(--font-mono); font-size: 0.8rem;">
-              <span>Attack Acc: <strong id="liveAccuracy">—</strong></span>
+            <div style="display: flex; gap: 1rem; font-family: var(--font-mono); font-size: 0.8rem; align-items: center; flex-wrap: wrap;">
+              <span>Attack Acc: <strong id="liveAccuracy">—</strong> <span style="color: var(--text-subtle);">(majority rate: 83.3% at TPR=0)</span></span>
               <span>TPR: <strong id="liveTpr">—</strong></span>
               <span>FPR: <strong id="liveFpr">—</strong></span>
             </div>
@@ -149,7 +149,7 @@
         </div>
       </div>
       <div class="plain-notice">
-        Note: One canary test shows no detectable signal above noise, which is empirical evidence under this threat model, not absolute mathematical proof of unlearning.
+        On our canary test, the removed canaries' loss moved toward the non-member distribution after shard retraining. This is one small test and is not proof of forgetting.
       </div>
     </section>
 
@@ -224,6 +224,7 @@
           <div>
             <div class="card-title">Replay of Recorded Run</div>
             <div class="card-subtitle">Step-by-step sequential inspection of the 30 recorded consent withdrawal events</div>
+            <div style="font-size: 0.8rem; color: var(--text-subtle); margin-top: 0.35rem;">Replay uses the 30-request simulation; the receipts table lists the 10 receipts generated in the audit run.</div>
           </div>
           <div class="control-bar" style="margin-bottom: 0;">
             <span id="replayStepCounter" style="font-family: var(--font-mono); font-weight: 600;">Event 1 of 30</span>
@@ -257,11 +258,14 @@
           The compliance score evaluates how effectively the system fulfills right-to-be-forgotten requests across four core pillars (total: 100 points):
         </p>
         <ul>
-          <li><strong>Fulfillment Rate (30 pts max):</strong> Percentage of submitted withdrawal requests successfully executed without errors.</li>
-          <li><strong>Speed & Latency (25 pts max):</strong> Wall-clock retrain latency benchmarked against the monolithic retrain standard.</li>
-          <li><strong>Privacy Protection (25 pts max):</strong> Empirical membership inference mitigation measured via loss-threshold attack on canary records.</li>
-          <li><strong>Chain Integrity (20 pts max):</strong> Cryptographic verification of the SHA-256 hash chain and HMAC-SHA256 signatures.</li>
+          <li><strong>Fulfillment Rate (30 pts max):</strong> Percentage of submitted withdrawal requests successfully executed without errors. Earned: 30.0 / 30.0.</li>
+          <li><strong>Speed & Latency (25 pts max):</strong> Wall-clock retrain latency benchmarked against the monolithic retrain standard. Earned: 24.1 / 25.0.</li>
+          <li><strong>Privacy Protection (25 pts max):</strong> Membership inference mitigation: 0.0 pts awarded. Leakage reduction is -0.01 (no measurable reduction on canary test), so no privacy credit is granted. Earned: 0.0 / 25.0.</li>
+          <li><strong>Chain Integrity (20 pts max):</strong> Cryptographic verification of the SHA-256 hash chain and HMAC-SHA256 signatures. Earned: 20.0 / 20.0.</li>
         </ul>
+        <p>
+          <strong>Total Recomputed Score:</strong> 74.1 / 100 (Grade B).
+        </p>
         <p style="font-size: 0.8rem; color: var(--text-subtle);">
           Note: This internal scoring framework is designed to help operators benchmark unlearning service quality, but does not constitute legal or regulatory certification under GDPR, HIPAA, or CCPA.
         </p>

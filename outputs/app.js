@@ -99,8 +99,10 @@ function renderKeyFigures(data) {
     accEl.textContent = `${(Number(s.ensemble_accuracy) * 100).toFixed(2)}%`;
     const majClass = (Number(s.majority_class_baseline) * 100).toFixed(2);
     const baseAcc = (Number(s.baseline_accuracy) * 100).toFixed(2);
-    accSub.textContent = `Baseline: ${baseAcc}% | Majority class: ${majClass}%`;
-    accEl.closest(".kpi-cell").title = "Source: ensemble.accuracy vs baseline.accuracy in results.json";
+    const ensAuc = Number(data.ensemble?.auc || 0.635).toFixed(3);
+    const baseAuc = Number(data.baseline?.auc || 0.629).toFixed(3);
+    accSub.textContent = `Baseline: ${baseAcc}% (AUC: ${baseAuc}) | SISA AUC: ${ensAuc} | Majority: ${majClass}%`;
+    accEl.closest(".kpi-cell").title = "Source: results.json (ROC AUC 0.635 vs 0.629; majority class is 88.74%)";
   }
 
   // 4. Receipt Chain Status
@@ -161,8 +163,12 @@ function initTab1(data) {
     sweep.filter(s => s.n_shards > 1).forEach((item) => {
       const opt = document.createElement("option");
       opt.value = item.n_shards;
-      opt.textContent = `N = ${item.n_shards} Shards`;
-      if (item.n_shards === 8) opt.selected = true;
+      if (item.n_shards === 8) {
+        opt.textContent = `N = 8 Shards (measured: 1.04s)`;
+        opt.selected = true;
+      } else {
+        opt.textContent = `N = ${item.n_shards} Shards [estimated (full / ${item.n_shards})]`;
+      }
       shardSelector.appendChild(opt);
     });
 
@@ -213,21 +219,32 @@ function updateRetrainBarChart(nShards, sweep, retrainTimes) {
   const ctx = document.getElementById("retrainBarCanvas")?.getContext("2d");
   if (!ctx) return;
 
-  const sweepEntry = sweep.find((s) => s.n_shards === nShards);
-  const fullRetrainTime = retrainTimes?.full_retrain || 4.68;
-  
-  // Calculate average shard retrain time from sweep data
-  let shardTime = 1.04;
-  if (sweepEntry && sweepEntry.shard_accs) {
-    shardTime = Number((sweepEntry.train_time / nShards).toFixed(3));
-  } else if (nShards === 8) {
-    shardTime = retrainTimes?.avg_shard_retrain || 1.04;
-  }
-
-  const speedup = (fullRetrainTime / shardTime).toFixed(1);
+  const fullRetrainTime = retrainTimes?.full_retrain || 4.676;
   const subtitleEl = document.getElementById("barChartSubtitle");
-  if (subtitleEl) {
-    subtitleEl.textContent = `N=${nShards} shards: single shard retrain is ${speedup}× faster than full retrain`;
+
+  let shardTime;
+  let isMeasured = false;
+  let barLabel = "";
+
+  if (nShards === 8) {
+    // Measured single shard retrain time from results.json (retrain_times.avg_shard_retrain ~ 1.04s)
+    shardTime = retrainTimes?.avg_shard_retrain || 1.039;
+    isMeasured = true;
+    const speedup = (fullRetrainTime / shardTime).toFixed(1);
+    barLabel = "Single Shard (measured: 1/8th)";
+    if (subtitleEl) {
+      subtitleEl.textContent = `N=8 shards: single shard retrain is ${speedup}× faster than full retrain (measured: ${shardTime.toFixed(2)}s vs ${fullRetrainTime.toFixed(2)}s)`;
+    }
+  } else {
+    // Not measured: estimated as full_time / N
+    const sweepEntry = sweep.find((s) => s.n_shards === nShards);
+    const fullTimeForN = sweepEntry ? sweepEntry.train_time : fullRetrainTime;
+    shardTime = Number((fullTimeForN / nShards).toFixed(3));
+    const speedup = (fullRetrainTime / shardTime).toFixed(1);
+    barLabel = `Single Shard [estimated (full time / ${nShards})]`;
+    if (subtitleEl) {
+      subtitleEl.textContent = `N=${nShards} shards: single shard retrain is ~${speedup}× faster [estimated (full time / ${nShards}) — per-shard time not measured for N=${nShards}]`;
+    }
   }
 
   if (retrainBarChart) retrainBarChart.destroy();
@@ -235,13 +252,13 @@ function updateRetrainBarChart(nShards, sweep, retrainTimes) {
   retrainBarChart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: [`Single Shard (1/${nShards}th)`, "Full Model (Monolithic)"],
+      labels: [barLabel, "Full Model (Monolithic)"],
       datasets: [
         {
-          label: "Retrain Latency (seconds)",
+          label: isMeasured ? "Retrain Latency (seconds) — Measured" : "Retrain Latency (seconds) — Estimated",
           data: [shardTime, fullRetrainTime],
-          backgroundColor: ["#0f62fe", "#8d8d8d"],
-          borderColor: ["#0043ce", "#525252"],
+          backgroundColor: isMeasured ? ["#0f62fe", "#8d8d8d"] : ["#6929c4", "#8d8d8d"],
+          borderColor: isMeasured ? ["#0043ce", "#525252"] : ["#491d8b", "#525252"],
           borderWidth: 1,
           barPercentage: 0.5,
         },
@@ -254,7 +271,7 @@ function updateRetrainBarChart(nShards, sweep, retrainTimes) {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (ctx) => ` ${ctx.raw} seconds`,
+            label: (ctx) => ` ${ctx.raw} seconds${ctx.dataIndex === 0 && !isMeasured ? ' (estimated: full time / N)' : ''}`,
           },
         },
       },

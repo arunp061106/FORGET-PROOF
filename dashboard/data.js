@@ -6,12 +6,12 @@ window.FORGETPROOF_DATA = {
     "datathon": "IBM Z Datathon 2026",
     "exported_at": "2026-10-18T07:24:18Z",
     "system_info": {
-      "machine": "s390x",
-      "cpu_count": 3,
-      "python_version": "3.10.12",
-      "hostname": "forgetproof",
-      "system": "Linux",
-      "release": "5.15.0-56-generic"
+      "machine": "AMD64",
+      "cpu_count": 16,
+      "python_version": "3.12.10",
+      "hostname": "AK006",
+      "system": "Windows",
+      "release": "11"
     },
     "dataset_meta": {
       "dataset_name": "Diabetes 130-US Hospitals (UCI ID: 296)",
@@ -58,7 +58,7 @@ window.FORGETPROOF_DATA = {
       }
     },
     "compliance": {
-      "score": 79.4,
+      "score": 74.1,
       "grade": "B",
       "description": "Our own summary metric, not a regulatory standard.",
       "formula": "Score (0-100) = Fulfillment (30 pts) + Speed (25 pts) + Privacy (25 pts) + Integrity (20 pts)",
@@ -74,9 +74,9 @@ window.FORGETPROOF_DATA = {
           "description": "Retrain latency speedup: average shard retrain of 1.04s vs 4.68s full retrain baseline."
         },
         "privacy": {
-          "earned": 5.3,
+          "earned": 0.0,
           "max": 25.0,
-          "description": "Membership inference mitigation: evaluated via loss-threshold MIA on synthetic canary records."
+          "description": "Membership inference mitigation: 0.0 pts awarded. Leakage reduction is -0.01 (no measurable reduction on canary test), so no privacy credit is granted."
         },
         "integrity": {
           "earned": 20.0,
@@ -97,7 +97,7 @@ window.FORGETPROOF_DATA = {
     "accuracy_difference": 0.00046,
     "chain_verified": true,
     "receipt_count": 10,
-    "compliance_score": 79.4,
+    "compliance_score": 74.1,
     "compliance_grade": "B"
   },
   "baseline": {
@@ -543,7 +543,6 @@ window.FORGETPROOF_DATA = {
   "mia": {
     "attack_type": "Yeom Loss-Threshold Attack (Yeom et al. 2018)",
     "before": {
-      "auc": 0.11600000000000002,
       "attack_accuracy": 0.7333,
       "member_recall": 0.0,
       "nonmember_recall": 0.89,
@@ -573,7 +572,6 @@ window.FORGETPROOF_DATA = {
       ]
     },
     "after": {
-      "auc": 0.10550000000000001,
       "attack_accuracy": 0.8091,
       "member_recall": 0.0,
       "nonmember_recall": 0.89,
@@ -706,7 +704,7 @@ window.FORGETPROOF_DATA = {
         0.9919
       ]
     },
-    "disclaimer": "One canary test shows no detectable signal above noise, which is empirical evidence under this threat model, not absolute mathematical proof of unlearning."
+    "disclaimer": "On our canary test, the removed canaries' loss moved toward the non-member distribution after shard retraining. This is one small test and is not proof of forgetting."
   },
   "receipt_chain": {
     "chain_length": 10,
